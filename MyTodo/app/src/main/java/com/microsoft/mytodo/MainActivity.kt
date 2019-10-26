@@ -1,5 +1,6 @@
 package com.microsoft.mytodo
 
+import android.content.ContentValues
 import android.content.Context
 import android.os.Bundle
 import android.util.Log
@@ -17,7 +18,6 @@ import android.widget.*
 class MainActivity : AppCompatActivity() {
 
     private var todoList = ArrayList<TodoItem>()
-    private var adapter: MyCustomAdapter = MyCustomAdapter(this);
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,20 +30,62 @@ class MainActivity : AppCompatActivity() {
             Toast.makeText(this, "Click on " + position, Toast.LENGTH_SHORT).show()
         }
         fab.setOnClickListener {
-            adapter.updateResults()
+            var dbManager = TodoDatabase(this)
+
+            var values = ContentValues()
+            values.put("Title", "Buy Surface")//edtTitle.text.toString())
+            values.put("Content", "with pen")//edtContent.text.toString())
+
+            //if (id == 0) {
+                val mID = dbManager.insert(values)
+
+                if (mID > 0) {
+                    Toast.makeText(this, "Add note successfully!", Toast.LENGTH_LONG).show()
+                    //finish()
+                } else {
+                    Toast.makeText(this, "Fail to add note!", Toast.LENGTH_LONG).show()
+                }
+            //}
+
+            //adapter.updateResults()
+            loadTodoItems()
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        loadTodoItems()
     }
 
     fun loadTodoItems(){
-        content_listview.adapter = adapter;
+
+        var dbManager = TodoDatabase(this)
+        val cursor = dbManager.queryAll()
+
+        todoList.clear()
+        if (cursor.moveToFirst()) {
+
+            do {
+                val id = cursor.getInt(cursor.getColumnIndex("Id"))
+                val title = cursor.getString(cursor.getColumnIndex("Title"))
+                val content = cursor.getString(cursor.getColumnIndex("Content"))
+
+                todoList.add(TodoItem(id, title, content))
+
+            } while (cursor.moveToNext())
+        }
+
+        var todoAdapter = TodoListAdapter(this, todoList)
+        content_listview.adapter = todoAdapter;
     }
 
-    inner class MyCustomAdapter(context: Context) : BaseAdapter() {
-        private val _context: Context;
-        init {
-            _context = context;
+    inner class TodoListAdapter : BaseAdapter {
+        private var _context: Context
+        private var _todoList = ArrayList<TodoItem>()
+        constructor(context: Context, notesList: ArrayList<TodoItem>) : super() {
+            _todoList = notesList
+            _context = context
         }
-        public var rowCount: Int = 4;
 
         override fun getItem(position: Int): Any {
             return "TEST";
@@ -54,11 +96,10 @@ class MainActivity : AppCompatActivity() {
         }
 
         override fun getCount(): Int {
-            return rowCount;
+            return _todoList.size
         }
 
         fun updateResults() {
-            rowCount ++;
             //Triggers the list update
             notifyDataSetChanged()
         }
@@ -77,10 +118,10 @@ class MainActivity : AppCompatActivity() {
                 vh = view.tag as ViewHolder
             }
 
-            //var mNote = todoList[position]
+            var todoItem = todoList[position]
 
-            vh.todoTitle.text = "Title"//mNote.title
-            vh.todoContent.text = "Content"//.content
+            vh.todoTitle.text = "Title"//todoItem.title
+            vh.todoContent.text = "Content"//todoItem.content
 
             return view
         }

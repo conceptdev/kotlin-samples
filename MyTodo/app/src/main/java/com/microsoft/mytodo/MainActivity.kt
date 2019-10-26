@@ -2,26 +2,21 @@ package com.microsoft.mytodo
 
 import android.content.Context
 import android.os.Bundle
-import com.google.android.material.snackbar.Snackbar
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import android.widget.BaseAdapter
-import android.widget.ListView
-import android.widget.TextView
 
 import kotlinx.android.synthetic.main.activity_main.*
-import androidx.core.app.ComponentActivity
-import androidx.core.app.ComponentActivity.ExtraData
-import androidx.core.content.ContextCompat.getSystemService
-import android.icu.lang.UCharacter.GraphemeClusterBreak.T
-
+import kotlinx.android.synthetic.main.content_main.*
+import android.widget.*
 
 
 class MainActivity : AppCompatActivity() {
 
+    private var todoList = ArrayList<TodoItem>()
     private var adapter: MyCustomAdapter = MyCustomAdapter(this);
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -29,26 +24,26 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
 
-        val todoList = findViewById<ListView>(R.id.content_listview);
+        loadTodoItems()
 
-        todoList.adapter = adapter;
-
+        content_listview.onItemClickListener = AdapterView.OnItemClickListener { adapterView, view, position, id ->
+            Toast.makeText(this, "Click on " + position, Toast.LENGTH_SHORT).show()
+        }
         fab.setOnClickListener {
             adapter.updateResults()
         }
     }
 
-    private class MyCustomAdapter(context: Context) : BaseAdapter() {
+    fun loadTodoItems(){
+        content_listview.adapter = adapter;
+    }
+
+    inner class MyCustomAdapter(context: Context) : BaseAdapter() {
         private val _context: Context;
         init {
             _context = context;
         }
         public var rowCount: Int = 4;
-        override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
-            val textView = TextView(_context);
-            textView.text = "Text in row";
-            return textView;
-        }
 
         override fun getItem(position: Int): Any {
             return "TEST";
@@ -66,6 +61,38 @@ class MainActivity : AppCompatActivity() {
             rowCount ++;
             //Triggers the list update
             notifyDataSetChanged()
+        }
+
+        override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View? {
+            val view: View?
+            val vh: ViewHolder
+
+            if (convertView == null) {
+                view = layoutInflater.inflate(R.layout.todoitem, parent, false)
+                vh = ViewHolder(view)
+                view.tag = vh
+                Log.i("JSA", "set Tag for ViewHolder, position: " + position)
+            } else {
+                view = convertView
+                vh = view.tag as ViewHolder
+            }
+
+            //var mNote = todoList[position]
+
+            vh.todoTitle.text = "Title"//mNote.title
+            vh.todoContent.text = "Content"//.content
+
+            return view
+        }
+    }
+
+    private class ViewHolder(view: View?) {
+        val todoTitle: TextView
+        val todoContent: TextView
+
+        init {
+            this.todoTitle = view?.findViewById(R.id.todoTitle) as TextView
+            this.todoContent = view?.findViewById(R.id.todoContent) as TextView
         }
 
     }

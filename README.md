@@ -10,5 +10,6 @@ A custom layout based on `LinearLayout` that uses Jetpack Window Manager to arra
 
 - [About Surface Duo](https://www.microsoft.com/surface/devices/surface-duo)
 - [Developer documentation](https://docs.microsoft.com/dual-screen)
+- [Developer blog](https://devblogs.microsoft.com/surface-duo)
 - [App samples](https://github.com/microsoft/surface-duo-app-samples)
 - [Kotlin SDK samples](https://github.com/microsoft/surface-duo-sdk-samples-kotlin)

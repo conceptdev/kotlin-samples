@@ -98,6 +98,7 @@ class MainActivity : AppCompatActivity() {
                 if (event.sensor == mHingeAngleSensor) {
                     val angle = event.values[0].toInt()
                     dm_angle.text = "Hinge angle: ${angle}"
+                    // Posture angle bounds are guesses - need to look up the actual values
                     if (angle < 10)
                         dm_posture.text = "Closed"
                     else if (angle < 75)
@@ -106,7 +107,7 @@ class MainActivity : AppCompatActivity() {
                         dm_posture.text = "Concave / half-open"
                     else if (angle < 235)
                         dm_posture.text = "Flat / open"
-                    else
+                    else // 235 - 360
                         dm_posture.text = "Convex / flipped"
                 }
             }

@@ -3,6 +3,7 @@ package com.microsoft.device.dualscreen.postures
 import android.content.res.Configuration
 import android.graphics.Rect
 import android.hardware.Sensor
+import android.hardware.Sensor.TYPE_HINGE_ANGLE
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
@@ -97,6 +98,16 @@ class MainActivity : AppCompatActivity() {
                 if (event.sensor == mHingeAngleSensor) {
                     val angle = event.values[0].toInt()
                     dm_angle.text = "Hinge angle: ${angle}"
+                    if (angle < 10)
+                        dm_posture.text = "Closed"
+                    else if (angle < 75)
+                        dm_posture.text = "Peek"
+                    else if (angle < 160)
+                        dm_posture.text = "Concave / half-open"
+                    else if (angle < 235)
+                        dm_posture.text = "Flat / open"
+                    else
+                        dm_posture.text = "Convex / flipped"
                 }
             }
 

@@ -4,7 +4,40 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:padding="10dp"
     tools:context=".FirstFragment">
+
+    <TextView
+        android:id="@+id/a_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Android APIs"
+        android:textStyle="bold"
+        android:textAlignment="viewStart"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        />
+    <TextView
+        android:id="@+id/a_orientation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAlignment="viewStart"
+        android:text="Orientation: ?"
+        app:layout_constraintTop_toBottomOf="@id/a_title"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        />
+
+    <TextView
+        android:id="@+id/a_angle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="0"
+        android:textAlignment="viewStart"
+        app:layout_constraintTop_toBottomOf="@+id/a_orientation"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"/>
 
     <TextView
         android:id="@+id/jwm_title"
@@ -13,7 +46,7 @@
         android:text="Jetpack Window Manager"
         android:textStyle="bold"
         android:textAlignment="viewStart"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/a_angle"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         />
@@ -60,22 +93,12 @@
         app:layout_constraintStart_toStartOf="parent"/>
 
     <TextView
-        android:id="@+id/dm_angle"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="0"
-        android:textAlignment="viewStart"
-        app:layout_constraintTop_toBottomOf="@+id/dm_mask"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"/>
-
-    <TextView
         android:id="@+id/dm_posture"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="closed"
         android:textAlignment="viewStart"
-        app:layout_constraintTop_toBottomOf="@+id/dm_angle"
+        app:layout_constraintTop_toBottomOf="@+id/dm_mask"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"/>
 

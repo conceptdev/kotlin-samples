@@ -3,25 +3,30 @@ package com.microsoft.device.dualscreen.postures
 import android.content.res.Configuration
 import android.graphics.Rect
 import android.hardware.Sensor
-import android.hardware.Sensor.TYPE_HINGE_ANGLE
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.window.WindowManager
-import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.google.android.material.snackbar.Snackbar
 import com.microsoft.device.display.DisplayMask
 import kotlinx.android.synthetic.main.fragment_first.*
+import java.time.LocalDateTime
 import java.util.concurrent.Executor
 
 
 class MainActivity : AppCompatActivity() {
+
+    private val TAG = "PosturesTest"
+
+    private fun log (txt: String) {
+        Log.d(TAG, LocalDateTime.now().toString() + " " + txt)
+    }
 
     private lateinit var wm: WindowManager
 
@@ -30,6 +35,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         setSupportActionBar(findViewById(R.id.toolbar))
 
+        // hinge angle
         setupSensors()
 
         // Jetpack Window Manager
@@ -38,26 +44,32 @@ class MainActivity : AppCompatActivity() {
             runOnUiThreadExecutor(),
             { deviceState ->
                 jwm_posture.text = "Posture: ${deviceState.toString()}"
+                log ("DEVICE_STATE: Posture: ${deviceState.toString()}")
             })
 
-        findViewById<FloatingActionButton>(R.id.fab).setOnClickListener { view ->
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                    .setAction("Action", null).show()
-        }
+//        findViewById<FloatingActionButton>(R.id.fab).setOnClickListener { view ->
+//            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+//                    .setAction("Action", null).show()
+//        }
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
+        // Orientation
+        a_orientation.text = "Orientation: ${newConfig.orientation}"
+
         // DisplayMask
         val displayMask: DisplayMask = DisplayMask.fromResourcesRect(this)
-        val masks: List<Rect> = displayMask.getBoundingRectsForRotation(0)
+        val masks: List<Rect> = displayMask.getBoundingRectsForRotation(newConfig.orientation)
         var mask = Rect()
         if (masks.isEmpty()) {
-            dm_mask.text = "not spanned"
+            dm_mask.text = "Not spanned"
         } else {
             mask = masks[0]
-            dm_mask.text = "spanned, hinge: ${mask.toString()}"
+            dm_mask.text = "Spanned, hinge: ${mask.toString()}"
         }
+
+        log ("CONFIG_CHANGED: Orientation: ${newConfig.orientation} Hinge: ${mask.toString()}")
     }
 
     // Jetpack Window Manager
@@ -74,6 +86,7 @@ class MainActivity : AppCompatActivity() {
             runOnUiThreadExecutor(),
             { windowLayoutInfo ->
                 jwm_hinge.text = windowLayoutInfo.toString()
+                log ("LAYOUT_CHANGED: Posture: ${windowLayoutInfo.toString()}")
             })
     }
 
@@ -97,7 +110,7 @@ class MainActivity : AppCompatActivity() {
             override fun onSensorChanged(event: SensorEvent) {
                 if (event.sensor == mHingeAngleSensor) {
                     val angle = event.values[0].toInt()
-                    dm_angle.text = "Hinge angle: ${angle}"
+                    a_angle.text = "Hinge angle sensor: ${angle}"
                     // Posture angle bounds are guesses - need to look up the actual values
                     if (angle < 10)
                         dm_posture.text = "Closed"
@@ -109,6 +122,8 @@ class MainActivity : AppCompatActivity() {
                         dm_posture.text = "Flat / open"
                     else // 235 - 360
                         dm_posture.text = "Convex / flipped"
+
+                    log ("HINGE_SENSOR_CHANGED: Angle: ${angle}")
                 }
             }
 

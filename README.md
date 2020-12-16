@@ -6,6 +6,10 @@ Playing around with Kotlin and the Surface Duo.
 
 A custom layout based on `LinearLayout` that uses Jetpack Window Manager to arrange child views around the hinge on dual-screen devices like the Surface Duo.
 
+## [Postures](https://github.com/conceptdev/kotlin-samples/blob/main/Postures/README.md)
+
+Simple code snippets for hinge angle and masked area, using both Microsoft (DisplayMask) and Google (Window Manager) APIs.
+
 ## References
 
 - [About Surface Duo](https://www.microsoft.com/surface/devices/surface-duo)

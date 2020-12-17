@@ -1,15 +1,22 @@
 package com.microsoft.device.dualscreen.postures
 
+import android.content.Context
+import android.content.pm.ActivityInfo
 import android.content.res.Configuration
+import android.graphics.Point
 import android.graphics.Rect
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
+import android.hardware.display.DisplayManager
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.util.DisplayMetrics
 import android.util.Log
+import android.view.Display
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
@@ -19,7 +26,9 @@ import kotlinx.android.synthetic.main.fragment_first.*
 import java.time.LocalDateTime
 import java.util.concurrent.Executor
 
-
+/**
+ * Google sample https://github.com/android/user-interface-samples/blob/master/WindowManager/app/src/main/java/com/example/windowmanagersample/DisplayFeaturesActivity.kt
+ */
 class MainActivity : AppCompatActivity() {
 
     private val TAG = "PosturesTest"
@@ -29,14 +38,29 @@ class MainActivity : AppCompatActivity() {
     }
 
     private lateinit var wm: WindowManager
+    private var screenSize: Point = Point()
+    private var metrics: DisplayMetrics = DisplayMetrics()
+    private lateinit var windowSize: Point
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(findViewById(R.id.toolbar))
 
-        // hinge angle
+        // Hinge angle sensor
         setupSensors()
+
+        // Screen size
+        var displayManager: DisplayManager = this.baseContext.getSystemService(Context.DISPLAY_SERVICE) as DisplayManager
+        var defaultDisplay = displayManager.getDisplay(Display.DEFAULT_DISPLAY)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
+            var displayMode = defaultDisplay.mode
+            screenSize = Point(displayMode.physicalWidth, displayMode.physicalHeight)
+            log ("CREATE: Screen size: ${screenSize}")
+        }
+
+        // TEST size when forced orientation
+        //requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
 
         // Jetpack Window Manager
         wm = WindowManager(this, null)
@@ -46,11 +70,6 @@ class MainActivity : AppCompatActivity() {
                 jwm_posture.text = "Posture: ${deviceState.toString()}"
                 log ("DEVICE_STATE: Posture: ${deviceState.toString()}")
             })
-
-//        findViewById<FloatingActionButton>(R.id.fab).setOnClickListener { view ->
-//            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-//                    .setAction("Action", null).show()
-//        }
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {
@@ -69,6 +88,13 @@ class MainActivity : AppCompatActivity() {
             dm_mask.text = "Spanned, hinge: ${mask.toString()}"
         }
 
+        // Window size
+        var display = this.window.decorView.display
+        display.getRealMetrics(metrics)
+        windowSize = Point(metrics.widthPixels, metrics.heightPixels)
+        a_windowsize.text = "Window size: ${windowSize}"
+        log ("CONFIG_CHANGED: Display metrics: ${metrics}")
+
         log ("CONFIG_CHANGED: Orientation: ${newConfig.orientation} Hinge: ${mask.toString()}")
     }
 
@@ -79,9 +105,24 @@ class MainActivity : AppCompatActivity() {
             handler.post(it)
         }
     }
-    // Jetpack Window Manager
+
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
+
+        // Screen size
+        a_screensize.text = "Screen size: ${screenSize}"
+
+        // Window size
+        var display = this.window.decorView.display
+        display.getRealMetrics(metrics)
+        windowSize = Point(metrics.widthPixels, metrics.heightPixels)
+        a_windowsize.text = "Window size: ${windowSize}"
+        log ("ATTACHED_TO_WINDOW: Display metrics: ${metrics}")
+
+        // Orientation
+        a_orientation.text = "Orientation: ${display.rotation}"
+
+        // Jetpack Window Manager
         wm.registerLayoutChangeCallback(
             runOnUiThreadExecutor(),
             { windowLayoutInfo ->
@@ -90,6 +131,14 @@ class MainActivity : AppCompatActivity() {
             })
     }
 
+    override fun onDetachedFromWindow() {
+        super.onDetachedFromWindow()
+        //TODO: wm.unregisterLayoutChangeCallback(layoutStateChangeCallback)
+    }
+    override fun onDestroy() {
+        super.onDestroy()
+        //TODO: wm.unregisterDeviceStateChangeCallback(deviceStateChangeCallback)
+    }
 
     private val HINGE_ANGLE_SENSOR_NAME = "Hinge Angle"
 
@@ -128,7 +177,7 @@ class MainActivity : AppCompatActivity() {
             }
 
             override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
-                //TODO
+                //TODO if required
             }
         }
     }
@@ -162,7 +211,10 @@ class MainActivity : AppCompatActivity() {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         return when (item.itemId) {
-            R.id.action_settings -> true
+            R.id.action_settings -> {
+                onAttachedToWindow()
+                true
+            }
             else -> super.onOptionsItemSelected(item)
         }
     }

@@ -19,6 +19,7 @@ import android.util.Log
 import android.view.Display
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.window.WindowManager
 import com.microsoft.device.display.DisplayMask
@@ -119,7 +120,7 @@ class MainActivity : AppCompatActivity() {
         a_windowsize.text = "Window size: ${windowSize}"
         log ("ATTACHED_TO_WINDOW: Display metrics: ${metrics}")
 
-        // Orientation
+        // Initial Orientation from display class
         a_orientation.text = "Orientation: ${display.rotation}"
 
         // Jetpack Window Manager

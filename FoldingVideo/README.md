@@ -4,6 +4,8 @@ Attempting to reproduce the [WindowManager+MotionLayout+ExoPlayer demo](https://
 
 ![Surface Duo with dual-screen app showing video on one screen and controls on the other](Screenshots/folding-video-demo.png)
 
+![7.3 inch emulator with app showing video and controls over the fold](Screenshots/folding-video-73-demo.png)
+
 ## References
 
 - [Foldables - WindowManager with MotionLayout (video)](https://www.youtube.com/watch?v=jIBNhxyciLQ)

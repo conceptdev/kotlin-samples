@@ -17,9 +17,9 @@ android {
 
     sourceSets{
         main {
-            java.srcDirs = ['../../../constraintlayout/constraintlayout/src/main/java']
-            res.srcDirs = ['../../../constraintlayout/constraintlayout/src/main/res']
-            manifest.srcFile '../../../constraintlayout/constraintlayout/src/main/AndroidManifest.xml'
+            java.srcDirs = ['../../../FoldingVideo/constraintlayout/src/main/java']
+            res.srcDirs = ['../../../FoldingVideo/constraintlayout/src/main/res']
+            manifest.srcFile '../../../FoldingVideo/constraintlayout/src/main/AndroidManifest.xml'
         }
     }
 

@@ -149,13 +149,24 @@ class MainActivity : Activity() {
             for (displayFeature in newLayoutInfo.displayFeatures) {
                 val foldFeature = displayFeature as? FoldingFeature
                 if (foldFeature != null) {
-                    if (foldFeature.isSeparating &&
+                    if (foldFeature.isSeparating && // isSeparating not responding as expected on 7" & 8" emulators...
                         foldFeature.orientation == FoldingFeature.ORIENTATION_HORIZONTAL
                     ) {
+                        //HACK:
+                        if (foldFeature.state == FoldingFeature.STATE_HALF_OPENED) { // this replaces isSeparating (temporarily)
+                            val fold = foldPosition(motionLayout, foldFeature)
+                            ConstraintLayout.getSharedValues().fireNewValue(R.id.fold, fold)
+                            playerView.useController = false // use other screen controls
+                        } else
+                        {
+                            ConstraintLayout.getSharedValues().fireNewValue(R.id.fold, 0);
+                            playerView.useController = true // use on-video controls
+                        }
+                        //ORIG:
                         // The foldable device is in tabletop mode
-                        val fold = foldPosition(motionLayout, foldFeature)
-                        ConstraintLayout.getSharedValues().fireNewValue(R.id.fold, fold)
-                        playerView.useController = false // use other screen controls
+                        //val fold = foldPosition(motionLayout, foldFeature)
+                        //ConstraintLayout.getSharedValues().fireNewValue(R.id.fold, fold)
+                        //playerView.useController = false // use other screen controls
                     } else {
                         ConstraintLayout.getSharedValues().fireNewValue(R.id.fold, 0);
                         playerView.useController = true // use on-video controls

@@ -7,6 +7,8 @@ Attempting to reproduce the [WindowManager+MotionLayout+ExoPlayer demo](https://
 ## References
 
 - [Foldables - WindowManager with MotionLayout (video)](https://www.youtube.com/watch?v=jIBNhxyciLQ)
+- [ConstraintLayout training](https://developer.android.com/training/constraint-layout)
+- [MotionLayout training](https://developer.android.com/training/constraint-layout/motionlayout)
 - [ExoPlayer documentation](https://exoplayer.dev/)
 - [ExoPlayer Codelab](https://developer.android.com/codelabs/exoplayer-intro#0)
 - [ExoPlayer code (GitHub)](https://github.com/google/ExoPlayer)

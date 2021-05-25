@@ -31,7 +31,6 @@ import androidx.window.WindowLayoutInfo
 import androidx.window.WindowManager
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.SimpleExoPlayer
-import com.google.android.exoplayer2.offline.DownloadHelper.createMediaSource
 import com.google.android.exoplayer2.ui.StyledPlayerControlView
 import com.google.android.exoplayer2.ui.StyledPlayerView
 import java.util.concurrent.Executor
@@ -152,27 +151,38 @@ class MainActivity : Activity() {
                     if (foldFeature.isSeparating && // isSeparating not responding as expected on 7" & 8" emulators...
                         foldFeature.orientation == FoldingFeature.ORIENTATION_HORIZONTAL
                     ) {
-                        //HACK:
-                        if (foldFeature.state == FoldingFeature.STATE_HALF_OPENED) { // this replaces isSeparating (temporarily)
+                        if (isDeviceSurfaceDuo())
+                        {
+                            //ORIG: this code _should_ work all on devices....
+                            // The foldable device is in tabletop mode
                             val fold = foldPosition(motionLayout, foldFeature)
                             ConstraintLayout.getSharedValues().fireNewValue(R.id.fold, fold)
                             playerView.useController = false // use other screen controls
-                        } else
-                        {
-                            ConstraintLayout.getSharedValues().fireNewValue(R.id.fold, 0);
-                            playerView.useController = true // use on-video controls
                         }
-                        //ORIG:
-                        // The foldable device is in tabletop mode
-                        //val fold = foldPosition(motionLayout, foldFeature)
-                        //ConstraintLayout.getSharedValues().fireNewValue(R.id.fold, fold)
-                        //playerView.useController = false // use other screen controls
+                        else {
+                            //HACK: required by the foldable emulators, which don't seem to honor isSeparating right now...???
+                            if (foldFeature.state == FoldingFeature.STATE_HALF_OPENED) { // this replaces isSeparating (temporarily)
+                                val fold = foldPosition(motionLayout, foldFeature)
+                                ConstraintLayout.getSharedValues().fireNewValue(R.id.fold, fold)
+                                playerView.useController = false // use other screen controls
+                            } else {
+                                ConstraintLayout.getSharedValues().fireNewValue(R.id.fold, 0);
+                                playerView.useController = true // use on-video controls
+                            }
+                        }
                     } else {
                         ConstraintLayout.getSharedValues().fireNewValue(R.id.fold, 0);
                         playerView.useController = true // use on-video controls
                     }
                 }
             }
+        }
+        /**
+         * HACK just to help with testing on Surface Duo AND foldable emulators until WM is stable */
+        fun isDeviceSurfaceDuo(): Boolean {
+            val surfaceDuoSpecificFeature = "com.microsoft.device.display.displaymask"
+            val pm = this@MainActivity.packageManager
+            return pm.hasSystemFeature(surfaceDuoSpecificFeature)
         }
     }
 }
